@@ -74,6 +74,20 @@
                    // console.log(data); // JSON data parsed by `data.json()` call
                     nombre = data[0].result
                 });
+            postData('https://192.168.0.254/api/jsonrpc', [
+                {
+                    "jsonrpc": "2.0",
+                    "method": "PlcProgram.Read",
+                    "id": 1,
+                    "params": {
+                        "var": "\"Data_block_1\".i"
+                    }
+                }
+            ])
+                .then(data => {
+                    // console.log(data); // JSON data parsed by `data.json()` call
+                    value = data[0].result
+                });
         }
     }, 500)
 
