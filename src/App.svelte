@@ -110,6 +110,7 @@
     maxValue={500}
     value={value}
     segments={1}
+    needleColor="black"
 />
 <button on:click={click}>
     Incrementa
