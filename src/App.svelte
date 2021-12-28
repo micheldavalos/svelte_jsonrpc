@@ -12,7 +12,7 @@
     let y = 0;
     let chartValues = [];
     let chartLabels = [];
-    let data = {
+    let data01 = {
         labels: chartLabels,
         datasets: [{
             label: 'Revenue',
@@ -31,57 +31,64 @@
         //Number - The value jump in the hard coded scale
         scaleStepWidth: 10,
         //Number - The scale starting value
-        scaleStartValue: 0
+        scaleStartValue: 0,
+        scales: {
+            y: {
+                suggestedMin: -1,
+                suggestedMax: 1
+            }
+        }
     };
 
-    setInterval(() => {
-
-        if (token !== 0) {
-            // console.log('aqui')
-            postData('https://192.168.0.254/api/jsonrpc', [
-                {
-                    "jsonrpc": "2.0",
-                    "method": "PlcProgram.Read",
-                    "id": 1,
-                    "params": {
-                        "var": "\"Data_block_1\".nombre"
-                    }
-                }
-            ])
-                .then(data => {
-                    // console.log(data); // JSON data parsed by `data.json()` call
-                    nombre = data[0].result
-                });
-            postData('https://192.168.0.254/api/jsonrpc', [
-                {
-                    "jsonrpc": "2.0",
-                    "method": "PlcProgram.Read",
-                    "id": 1,
-                    "params": {
-                        "var": "\"Data_block_1\".SineWave"
-                    }
-                }
-            ])
-                .then(data1 => {
-                    // console.log(data); // JSON data parsed by `data.json()` call
-                    y = data1[0].result
-                    x = x + 1
-                    // y = y + 1
-                    chartLabels.push(x.toString())
-                    chartValues.push(y)
-                    // console.log(chartValues)
-                    data = {
-                        labels: chartLabels,
-                        datasets: [{
-                            label: 'Revenue',
-                            backgroundColor: 'rgb(255, 99, 132)',
-                            borderColor: 'rgb(255, 99, 132)',
-                            data: chartValues
-                        }]
-                    }
-                });
-        }
-    }, 500)
+    // setInterval(() => {
+    //
+    //     if (token !== 0) {
+    //         // console.log('aqui')
+    //         postData('https://192.168.0.254/api/jsonrpc', [
+    //             {
+    //                 "jsonrpc": "2.0",
+    //                 "method": "PlcProgram.Read",
+    //                 "id": 1,
+    //                 "params": {
+    //                     "var": "\"Data_block_1\".nombre"
+    //                 }
+    //             }
+    //         ])
+    //             .then(data => {
+    //                 // console.log(data); // JSON data parsed by `data.json()` call
+    //                 nombre = data[0].result
+    //             });
+    //         postData('https://192.168.0.254/api/jsonrpc', [
+    //             {
+    //                 "jsonrpc": "2.0",
+    //                 "method": "PlcProgram.Read",
+    //                 "id": 1,
+    //                 "params": {
+    //                     "var": "\"Data_block_1\".SineWave"
+    //                 }
+    //             }
+    //         ])
+    //             .then(data1 => {
+    //                 // console.log(data); // JSON data parsed by `data.json()` call
+    //                 y = data1[0].result
+    //                 x = x + 1
+    //                 // y = y + 1
+    //                 chartLabels.push(x.toString())
+    //                 chartValues.push(y)
+    //                 // console.log(chartValues)
+    //                 data = {
+    //                     labels: chartLabels,
+    //                     datasets: [{
+    //                         label: 'Revenue',
+    //                         backgroundColor: 'rgb(255, 99, 132)',
+    //                         borderColor: 'rgb(255, 99, 132)',
+    //                         data: chartValues
+    //                     }]
+    //                 };
+    //
+    //             });
+    //     }
+    // }, 500)
     
     function click() {
         value++
@@ -141,30 +148,65 @@
                 {
                     "jsonrpc": "2.0",
                     "method": "PlcProgram.Read",
-                    "id": 1,
+                    "id": 0,
                     "params": {
                         "var": "\"Data_block_1\".nombre"
                     }
-                }
-            ])
-                .then(data => {
-                   // console.log(data); // JSON data parsed by `data.json()` call
-                    nombre = data[0].result
-                });
-            postData('https://192.168.0.254/api/jsonrpc', [
+                },
                 {
                     "jsonrpc": "2.0",
                     "method": "PlcProgram.Read",
                     "id": 1,
                     "params": {
+                        "var": "\"Data_block_1\".SineWave"
+                    }
+                },
+                {
+                    "jsonrpc": "2.0",
+                    "method": "PlcProgram.Read",
+                    "id": 2,
+                    "params": {
                         "var": "\"Data_block_1\".i"
                     }
                 }
+
             ])
                 .then(data => {
                     // console.log(data); // JSON data parsed by `data.json()` call
-                    value = data[0].result
+                    nombre = data[0].result
+                    value = data[2].result
+
+                    // console.log(data); // JSON data parsed by `data.json()` call
+                    y = data[1].result
+                    x = x + 1
+                    // y = y + 1
+                    chartLabels.push(x.toString())
+                    chartValues.push(y)
+                    // console.log(chartValues)
+                    data01 = {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Signal',
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: chartValues
+                        }]
+                    };
                 });
+        //     postData('https://192.168.0.254/api/jsonrpc', [
+        //         {
+        //             "jsonrpc": "2.0",
+        //             "method": "PlcProgram.Read",
+        //             "id": 1,
+        //             "params": {
+        //                 "var": "\"Data_block_1\".i"
+        //             }
+        //         }
+        //     ])
+        //         .then(data => {
+        //             // console.log(data); // JSON data parsed by `data.json()` call
+        //             value = data[0].result
+        //         });
         }
     }, 500)
 
@@ -200,7 +242,7 @@ Variable nombre en PLC: {nombre}
 <input bind:value={nombre_02}>
 <button on:click={send}>Send</button>
 
-<Line data={data} options={options}/>
+<Line data={data01} options={options}/>
 <style>
 
 </style>
