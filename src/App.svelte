@@ -4,9 +4,30 @@
     let value = 0
     let token = 0
     let nombre = ''
+    let nombre_02 = ''
     
     function click() {
         value++
+    }
+    function send() {
+        if (token !== 0) {
+            // console.log('aqui')
+            postData('https://192.168.0.254/api/jsonrpc', [
+                {
+                    "jsonrpc": "2.0",
+                    "method": "PlcProgram.Write",
+                    "id": 1,
+                    "params": {
+                        "var": "\"Data_block_1\".nombre",
+                        "value": nombre_02
+                    }
+                }
+            ])
+                .then(data => {
+                    // console.log(data); // JSON data parsed by `data.json()` call
+                    nombre = data[0].result
+                });
+        }
     }
 
     onMount(async () => {
@@ -54,7 +75,7 @@
                     nombre = data[0].result
                 });
         }
-    }, 1000)
+    }, 500)
 
     // Ejemplo implementando el metodo POST:
     async function postData(url = '', data = {}) {
@@ -79,8 +100,11 @@
 <button on:click={click}>
     Incrementa
 </button>
-
-{nombre}
+<p></p>
+Variable nombre en PLC: {nombre}
+<p></p>
+<input bind:value={nombre_02}>
+<button on:click={send}>Send</button>
 <style>
 
 </style>
