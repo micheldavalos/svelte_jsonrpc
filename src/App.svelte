@@ -1,10 +1,87 @@
 <script>
     import Speedometer from "svelte-speedometer"
     import { onMount } from "svelte";
+    import Line from "svelte-chartjs/src/Line.svelte"
+
     let value = 0
     let token = 0
     let nombre = ''
     let nombre_02 = ''
+
+    let x = 0;
+    let y = 0;
+    let chartValues = [];
+    let chartLabels = [];
+    let data = {
+        labels: chartLabels,
+        datasets: [{
+            label: 'Revenue',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: chartValues
+        }]
+    };
+    let options = {
+        animation: false,
+        //Boolean - If we want to override with a hard coded scale
+        scaleOverride: true,
+        //** Required if scaleOverride is true **
+        //Number - The number of steps in a hard coded scale
+        scaleSteps: 10,
+        //Number - The value jump in the hard coded scale
+        scaleStepWidth: 10,
+        //Number - The scale starting value
+        scaleStartValue: 0
+    };
+
+    setInterval(() => {
+
+        if (token !== 0) {
+            // console.log('aqui')
+            postData('https://192.168.0.254/api/jsonrpc', [
+                {
+                    "jsonrpc": "2.0",
+                    "method": "PlcProgram.Read",
+                    "id": 1,
+                    "params": {
+                        "var": "\"Data_block_1\".nombre"
+                    }
+                }
+            ])
+                .then(data => {
+                    // console.log(data); // JSON data parsed by `data.json()` call
+                    nombre = data[0].result
+                });
+            postData('https://192.168.0.254/api/jsonrpc', [
+                {
+                    "jsonrpc": "2.0",
+                    "method": "PlcProgram.Read",
+                    "id": 1,
+                    "params": {
+                        "var": "\"Data_block_1\".SineWave"
+                    }
+                }
+            ])
+                .then(data1 => {
+                    // console.log(data); // JSON data parsed by `data.json()` call
+                    y = data1[0].result
+                    x = x + 1
+                    // y = y + 1
+                    chartLabels.push(x.toString())
+                    chartValues.push(y)
+                    // console.log(chartValues)
+                    data = {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Revenue',
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: chartValues
+                        }]
+                    }
+                });
+        }
+    }, 500)
     
     function click() {
         value++
@@ -115,11 +192,15 @@
 <button on:click={click}>
     Incrementa
 </button>
+
 <p></p>
 Variable nombre en PLC: {nombre}
 <p></p>
+
 <input bind:value={nombre_02}>
 <button on:click={send}>Send</button>
+
+<Line data={data} options={options}/>
 <style>
 
 </style>
